@@ -1,7 +1,7 @@
 import { Checkbox, CheckboxGroup, LabeledForm, Radio, RadioGroup, Select, TextInput, Textarea } from "@sheinc/shelikes-design-system";
 import { Controller, useForm } from "react-hook-form";
 import { MyInput } from "./MyInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type FormData = {
   password: string;
@@ -12,11 +12,12 @@ type FormData = {
   address: string;
   fruits: string[];
   courses: string[];
+  emailSubscribe: boolean;
 };
 
 function App() {
   const [formData, setFormDataData] = useState<any>("");
-  const { register, handleSubmit, control, formState } = useForm<FormData>({
+  const { register, handleSubmit, control, formState, reset } = useForm<FormData>({
     defaultValues: {
       password: "",
       email: "",
@@ -56,6 +57,21 @@ function App() {
     { label: "マーケティング", value: "marketing" },
     { label: "ライティング", value: "writing" },
   ];
+
+  // 初期値を更新する例
+  useEffect(() => {
+    reset({
+      password: "password",
+      email: "email",
+      name: "name",
+      introduction: "introduction",
+      colors: ["red", "yellow"],
+      address: "tokyo",
+      fruits: ["apple", "orange"],
+      courses: ["design"],
+      emailSubscribe: true,
+    });
+  }, []);
 
   return (
     <>
@@ -153,6 +169,27 @@ function App() {
                     </CheckboxGroup>
                     <p>{error?.message}</p>
                   </>
+                );
+              }}
+            />
+          </div>
+          <div>
+            <p>Booleanを扱うチェックボックスの例</p>
+            <Controller
+              name="emailSubscribe"
+              control={control}
+              render={({ field: { ref: _, ...field }, fieldState: { error } }) => {
+                return (
+                  <Checkbox
+                    {...field}
+                    label="購読する？"
+                    value={String(field.value)}
+                    checked={field.value}
+                    onChange={() => {
+                      // RHFによって送信される field の値を更新
+                      field.onChange(!field.value);
+                    }}
+                  />
                 );
               }}
             />
