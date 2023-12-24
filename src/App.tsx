@@ -2,6 +2,8 @@ import { Checkbox, CheckboxGroup, LabeledForm, Radio, RadioGroup, Select, TextIn
 import { Controller, useForm } from "react-hook-form";
 import { MyInput } from "./MyInput";
 import { useEffect, useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 type FormData = {
   password: string;
@@ -13,6 +15,7 @@ type FormData = {
   fruits: string[];
   courses: string[];
   emailSubscribe: boolean;
+  description: string;
 };
 
 function App() {
@@ -27,6 +30,7 @@ function App() {
       address: "",
       fruits: [],
       courses: [],
+      description: "",
     },
   });
 
@@ -217,6 +221,24 @@ function App() {
               )}
             />
           </div>
+        </section>
+        <section>
+          <h1>Quill</h1>
+          <Controller
+            name="description"
+            control={control}
+            render={({ field: { ref: _, ...field }, fieldState: { error } }) => {
+              return (
+                <ReactQuill
+                  theme="snow"
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(e);
+                  }}
+                />
+              );
+            }}
+          />
         </section>
         <button>送信</button>
       </form>
