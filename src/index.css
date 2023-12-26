@@ -1,4 +1,4 @@
-@import '../node_modules/@sheinc/shelikes-design-system/lib/style.css';
+@import "../node_modules/@sheinc/shelikes-design-system/lib/style.css";
 
 section {
   margin-bottom: 100px;
@@ -10,3 +10,7 @@ section {
   }
 }
 
+.nav-wrapper {
+  display: flex;
+  gap: 10px;
+}
