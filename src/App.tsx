@@ -1,5 +1,5 @@
 import { Checkbox, CheckboxGroup, LabeledForm, Radio, RadioGroup, Select, TextInput, Textarea } from "@sheinc/shelikes-design-system";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { MyInput } from "./MyInput";
 import { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
@@ -16,6 +16,8 @@ type FormData = {
   courses: string[];
   emailSubscribe: boolean;
   description: string;
+  checkPoints: { title: string; description: string }[];
+  classMates: { name: string; age: string }[];
 };
 
 function App() {
@@ -31,6 +33,7 @@ function App() {
       fruits: [],
       courses: [],
       description: "",
+      checkPoints: [],
     },
   });
 
@@ -74,15 +77,35 @@ function App() {
       fruits: ["apple", "orange"],
       courses: ["design"],
       emailSubscribe: true,
+      checkPoints: [],
+      classMates: [],
     });
   }, []);
+
+  const {
+    fields: checkPointsFields,
+    remove: checkPointsRemove,
+    append: checkPointsAppend,
+  } = useFieldArray({
+    name: "checkPoints",
+    control,
+  });
+
+  const {
+    fields: classMatesFields,
+    remove: classMatesRemove,
+    append: classMatesAppend,
+  } = useFieldArray({
+    name: "classMates",
+    control,
+  });
 
   return (
     <>
       <h1>TestForm</h1>
       <div className="data">
         <b>送信データ</b>
-        {JSON.stringify(formData)}
+        <pre>{JSON.stringify(formData, null, "\t")}</pre>
       </div>
 
       <form onSubmit={onSubmit}>
@@ -222,6 +245,7 @@ function App() {
             />
           </div>
         </section>
+
         <section>
           <h1>Quill</h1>
           <Controller
@@ -239,6 +263,56 @@ function App() {
               );
             }}
           />
+        </section>
+
+        <section>
+          <h1>ネスト：register</h1>
+          <pre>
+            fields:
+            {JSON.stringify(checkPointsFields, null, "\t")}
+          </pre>
+          {checkPointsFields.map((field, i) => (
+            <div key={field.id}>
+              <button type="button" onClick={() => checkPointsRemove(i)}>
+                削除
+              </button>
+              <input {...register(`checkPoints.${i}.title` as const)} />
+              <input {...register(`checkPoints.${i}.description` as const)} />
+            </div>
+          ))}
+          <button type="button" onClick={() => checkPointsAppend({ title: "title", description: "description" })}>
+            append
+          </button>
+        </section>
+
+        <section>
+          <h1>ネスト：Controller</h1>
+          <section>
+            <pre>
+              fields:
+              {JSON.stringify(classMatesFields, null, "\t")}
+            </pre>
+            {classMatesFields.map((field, i) => (
+              <div key={field.id}>
+                <button type="button" onClick={() => classMatesRemove(i)}>
+                  {i}を削除
+                </button>
+                <Controller
+                  name={`classMates.${i}.name`}
+                  control={control}
+                  render={({ field }) => <TextInput label="名前" layout="horizontal" {...field} />}
+                />
+                <Controller
+                  name={`classMates.${i}.age`}
+                  control={control}
+                  render={({ field }) => <TextInput label="年齢" layout="horizontal" {...field} />}
+                />
+              </div>
+            ))}
+            <button type="button" onClick={() => classMatesAppend({ name: "Taro", age: "20" })}>
+              append
+            </button>
+          </section>
         </section>
         <button>送信</button>
       </form>
